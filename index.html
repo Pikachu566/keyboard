@@ -142,32 +142,37 @@
     }, 100);
   }
 
-  function checkTyping() {
-    const userInput = inputArea.value;
-    let displayText = '';
-    errorCount = 0;
+function checkTyping() {
+  const userInput = inputArea.value;
+  let displayText = '';
+  let totalErrorsThisCheck = 0;
 
-    for (let i = 0; i < selectedText.length; i++) {
-      if (i < userInput.length) {
-        if (userInput[i] === selectedText[i]) {
-          displayText += `<span class="done">${selectedText[i]}</span>`;
-        } else {
-          displayText += `<span class="wrong">${selectedText[i]}</span>`;
-          errorCount++;
-        }
+  for (let i = 0; i < selectedText.length; i++) {
+    if (i < userInput.length) {
+      if (userInput[i] === selectedText[i]) {
+        displayText += `<span class="done">${selectedText[i]}</span>`;
       } else {
-        displayText += `<span style="color: grey;">${selectedText[i]}</span>`;
+        displayText += `<span class="wrong">${selectedText[i]}</span>`;
+        totalErrorsThisCheck++;
       }
-    }
-
-    karanganDiv.innerHTML = displayText;
-    errorDisplay.innerText = errorCount;
-
-    if (userInput === selectedText) {
-      clearInterval(interval);
-      inputArea.disabled = true;
+    } else {
+      displayText += `<span style="color: grey;">${selectedText[i]}</span>`;
     }
   }
+
+  // Hanya tambah kesalahan jika jumlah sekarang lebih dari sebelumnya
+  if (totalErrorsThisCheck > errorCount) {
+    errorCount = totalErrorsThisCheck;
+  }
+
+  karanganDiv.innerHTML = displayText;
+  errorDisplay.innerText = errorCount;
+
+  if (userInput === selectedText) {
+    clearInterval(interval);
+    inputArea.disabled = true;
+  }
+}
 
   window.onload = loadText;
 </script>
