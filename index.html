@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8" />
+  <title>Fiq Typing Game</title>
+  <style>
+    body {
+      background-color: #121212;
+      color: white;
+      font-family: monospace;
+      padding: 30px;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    select, button {
+      padding: 8px 12px;
+      margin-right: 10px;
+      margin-bottom: 10px;
+      background: #333;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .karangan {
+      color: grey;
+      margin: 20px 0;
+      font-size: 18px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+    }
+    .typing-area {
+      width: 100%;
+      height: 150px;
+      background: #1e1e1e;
+      color: white;
+      padding: 10px;
+      font-size: 18px;
+      border: 1px solid #555;
+      border-radius: 5px;
+      outline: none;
+      resize: none;
+    }
+    .stats {
+      margin-top: 20px;
+    }
+    .done {
+      color: lightgreen;
+    }
+    .wrong {
+      background-color: red;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+
+<h1>⌨️ Fiq's Typing Challenge</h1>
+
+<label for="language">Bahasa:</label>
+<select id="language" onchange="loadText()">
+  <option value="ms">Bahasa Malaysia</option>
+  <option value="en">English</option>
+</select>
+
+<label for="difficulty">Tahap:</label>
+<select id="difficulty" onchange="loadText()">
+  <option value="easy">Easy</option>
+  <option value="normal">Normal</option>
+  <option value="hard">Hard</option>
+  <option value="veryhard">Very Hard</option>
+</select>
+
+<br>
+<button onclick="startTest()">Start</button>
+<button onclick="resetAll()">Reset</button>
+
+<div id="karangan" class="karangan"></div>
+
+<textarea id="input" class="typing-area" placeholder="Taip semula karangan di sini..." oninput="checkTyping()" disabled></textarea>
+
+<div class="stats">
+  <p>Masa: <span id="time">0.00</span> saat</p>
+  <p>Kesalahan: <span id="errors">0</span></p>
+</div>
+
+<script>
+  const texts = {
+    ms: {
+      easy: "Saya suka belajar komputer.",
+      normal: "Belajar komputer sangat menyeronokkan dan membuka minda.\nIa membantu saya memahami teknologi moden.",
+      hard: "Kemahiran komputer penting dalam dunia moden yang serba pantas.\nSaya boleh mencari maklumat dengan pantas.\nDengan itu, saya dapat membuat kerja sekolah dengan lebih cekap.",
+      veryhard: `Penerapan teknologi komputer dalam kehidupan seharian membantu meningkatkan produktiviti dan kecekapan kerja.\nSaya sering menggunakan aplikasi seperti pemproses kata, spreadsheet dan alat dalam talian untuk belajar.\nSelain itu, saya juga belajar asas pengaturcaraan dan reka bentuk laman web.\nTeknologi memberi peluang kepada saya untuk menjadi lebih kreatif dan inovatif.\nSaya yakin dengan kemahiran ini, masa depan saya akan lebih cerah.`
+    },
+    en: {
+      easy: "I love learning computers.",
+      normal: "Learning about computers is fun and mind-opening.\nIt helps me understand modern technology.",
+      hard: "Computer skills are essential in today's fast-paced world.\nI can find information quickly.\nThat helps me complete schoolwork efficiently.",
+      veryhard: `The integration of computer technology into daily life boosts productivity and efficiency.\nI often use apps like word processors, spreadsheets, and online tools for studying.\nBesides that, I’m learning basic programming and web design.\nTechnology gives me a chance to be more creative and innovative.\nI believe with these skills, my future will be brighter.`
+    }
+  };
+
+  let selectedText = '';
+  let errorCount = 0;
+  let startTime, interval;
+
+  const inputArea = document.getElementById("input");
+  const karanganDiv = document.getElementById("karangan");
+  const timeDisplay = document.getElementById("time");
+  const errorDisplay = document.getElementById("errors");
+
+  function loadText() {
+    const lang = document.getElementById("language").value;
+    const diff = document.getElementById("difficulty").value;
+    selectedText = texts[lang][diff];
+    karanganDiv.innerHTML = selectedText;
+    resetAll();
+  }
+
+  function resetAll() {
+    inputArea.value = '';
+    inputArea.disabled = true;
+    errorCount = 0;
+    timeDisplay.innerText = '0.00';
+    errorDisplay.innerText = '0';
+    karanganDiv.innerHTML = selectedText;
+    clearInterval(interval);
+  }
+
+  function startTest() {
+    errorCount = 0;
+    inputArea.disabled = false;
+    inputArea.focus();
+    startTime = new Date().getTime();
+    clearInterval(interval);
+    interval = setInterval(() => {
+      const now = new Date().getTime();
+      const elapsed = ((now - startTime) / 1000).toFixed(2);
+      timeDisplay.innerText = elapsed;
+    }, 100);
+  }
+
+  function checkTyping() {
+    const userInput = inputArea.value;
+    let displayText = '';
+    errorCount = 0;
+
+    for (let i = 0; i < selectedText.length; i++) {
+      if (i < userInput.length) {
+        if (userInput[i] === selectedText[i]) {
+          displayText += `<span class="done">${selectedText[i]}</span>`;
+        } else {
+          displayText += `<span class="wrong">${selectedText[i]}</span>`;
+          errorCount++;
+        }
+      } else {
+        displayText += `<span style="color: grey;">${selectedText[i]}</span>`;
+      }
+    }
+
+    karanganDiv.innerHTML = displayText;
+    errorDisplay.innerText = errorCount;
+
+    if (userInput === selectedText) {
+      clearInterval(interval);
+      inputArea.disabled = true;
+    }
+  }
+
+  window.onload = loadText;
+</script>
+
+</body>
+</html>
